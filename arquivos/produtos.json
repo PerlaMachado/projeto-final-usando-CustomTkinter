@@ -1,0 +1,32 @@
+[
+    {
+        "produto": "lápis",
+        "antigo": "--",
+        "atual": 45.0,
+        "status": "Novo"
+    },
+    {
+        "produto": "borracha",
+        "antigo": 46.0,
+        "atual": 79.0,
+        "status": "▲ Aumentou"
+    },
+    {
+        "produto": "caneta",
+        "antigo": 46.0,
+        "atual": 45.0,
+        "status": "▼ Diminuiu"
+    },
+    {
+        "produto": "massinha",
+        "antigo": "--",
+        "atual": 89.0,
+        "status": "Novo"
+    },
+    {
+        "produto": "caderno",
+        "antigo": "--",
+        "atual": 123.0,
+        "status": "Novo"
+    }
+]

@@ -1,0 +1,1 @@
+tema_atual = "dark"

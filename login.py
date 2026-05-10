@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 from menu import MenuApp
 import tema
+from cores import cores
 
 
 USUARIO_PADRAO = "admin"
@@ -21,11 +22,14 @@ class LoginApp(ctk.CTk):
         self.resizable(False, False)
 
         # =========================
-        # TEMA
+        # TEMA INICIAL
         # =========================
-        ctk.set_appearance_mode(
-            tema.tema_atual
-        )
+        ctk.set_appearance_mode(tema.tema_atual)
+
+        # =========================
+        # CORES (PADRÃO GLOBAL)
+        # =========================
+        self.c = cores()
 
         # =========================
         # TÍTULO
@@ -33,12 +37,11 @@ class LoginApp(ctk.CTk):
         self.label_titulo = ctk.CTkLabel(
             self,
             text="Tela de Login",
-            font=("Segoe UI", 28, "bold")
+            font=("Segoe UI", 28, "bold"),
+            text_color=self.c["texto"]
         )
 
-        self.label_titulo.pack(
-            pady=30
-        )
+        self.label_titulo.pack(pady=30)
 
         # =========================
         # USUÁRIO
@@ -50,9 +53,7 @@ class LoginApp(ctk.CTk):
             height=40
         )
 
-        self.entry_usuario.pack(
-            pady=10
-        )
+        self.entry_usuario.pack(pady=10)
 
         # =========================
         # SENHA
@@ -65,9 +66,7 @@ class LoginApp(ctk.CTk):
             height=40
         )
 
-        self.entry_senha.pack(
-            pady=10
-        )
+        self.entry_senha.pack(pady=10)
 
         # =========================
         # BOTÃO LOGIN
@@ -77,12 +76,12 @@ class LoginApp(ctk.CTk):
             text="Entrar",
             width=260,
             height=42,
+            fg_color=self.c["botao"],
+            hover_color=self.c["hover"],
             command=self.verificar_login
         )
 
-        self.botao_login.pack(
-            pady=20
-        )
+        self.botao_login.pack(pady=20)
 
         # =========================
         # SWITCH TEMA
@@ -94,14 +93,9 @@ class LoginApp(ctk.CTk):
             command=self.mudar_tema
         )
 
-        self.switch_tema.place(
-            x=330,
-            y=20
-        )
+        self.switch_tema.place(x=330, y=20)
 
-        # Mantém posição do switch
         if tema.tema_atual == "dark":
-
             self.switch_tema.select()
 
     # ===================================
@@ -110,15 +104,20 @@ class LoginApp(ctk.CTk):
     def mudar_tema(self):
 
         if self.switch_tema.get() == 1:
-
             tema.tema_atual = "dark"
-
         else:
-
             tema.tema_atual = "light"
 
-        ctk.set_appearance_mode(
-            tema.tema_atual
+        ctk.set_appearance_mode(tema.tema_atual)
+
+        # 🔥 atualiza cores locais
+        self.c = cores()
+
+        # (opcional simples: recarrega texto)
+        self.label_titulo.configure(text_color=self.c["texto"])
+        self.botao_login.configure(
+            fg_color=self.c["botao"],
+            hover_color=self.c["hover"]
         )
 
     # ===================================
@@ -127,34 +126,21 @@ class LoginApp(ctk.CTk):
     def verificar_login(self):
 
         usuario = self.entry_usuario.get()
-
         senha = self.entry_senha.get()
 
-        if (
-            usuario == USUARIO_PADRAO
-            and
-            senha == SENHA_PADRAO
-        ):
+        if usuario == USUARIO_PADRAO and senha == SENHA_PADRAO:
 
-            messagebox.showinfo(
-                "Sucesso",
-                "Login realizado!"
-            )
+            messagebox.showinfo("Sucesso", "Login realizado!")
 
             self.withdraw()
-
             self.menu = MenuApp()
 
         else:
 
-            messagebox.showerror(
-                "Erro",
-                "Usuário ou senha incorretos!"
-            )
+            messagebox.showerror("Erro", "Usuário ou senha incorretos!")
 
 
 if __name__ == "__main__":
 
     app = LoginApp()
-
     app.mainloop()

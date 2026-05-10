@@ -1,4 +1,7 @@
 import customtkinter as ctk
+from tkinter import messagebox
+from cores import cores
+import tema
 
 
 class EmailFrame(ctk.CTkFrame):
@@ -9,15 +12,14 @@ class EmailFrame(ctk.CTkFrame):
         # =========================
         # CORES
         # =========================
-        self.cor_fundo = "#1E1E2E"
-        self.cor_card = "#2A2D3E"
+        c = cores()
 
-        self.cor_botao = "#3B82F6"
-        self.cor_hover = "#2563EB"
+        self.cor_card = c["card"]
+        self.cor_texto = c["texto"]
+        self.cor_botao = c["botao"]
+        self.cor_hover = c["hover"]
 
-        self.configure(
-            fg_color="transparent"
-        )
+        self.configure(fg_color="transparent")
 
         # =========================
         # TÍTULO
@@ -26,12 +28,10 @@ class EmailFrame(ctk.CTkFrame):
             self,
             text="📧 Envio de E-mail",
             font=("Segoe UI", 28, "bold"),
-            text_color="white"
+            text_color=self.cor_texto
         )
 
-        self.label_titulo.pack(
-            pady=(20, 20)
-        )
+        self.label_titulo.pack(pady=(20, 10))
 
         # =========================
         # CARD PRINCIPAL
@@ -39,13 +39,12 @@ class EmailFrame(ctk.CTkFrame):
         self.frame_card = ctk.CTkFrame(
             self,
             width=500,
-            height=720,
+            height=650,
             fg_color=self.cor_card,
             corner_radius=20
         )
 
         self.frame_card.pack(pady=10)
-
         self.frame_card.pack_propagate(False)
 
         # =========================
@@ -55,13 +54,10 @@ class EmailFrame(ctk.CTkFrame):
             self.frame_card,
             placeholder_text="Digite o e-mail do destinatário",
             width=350,
-            height=40,
-            corner_radius=12
+            height=40
         )
 
-        self.entry_destinatario.pack(
-            pady=(30, 15)
-        )
+        self.entry_destinatario.pack(pady=(30, 10))
 
         # =========================
         # ASSUNTO
@@ -70,28 +66,31 @@ class EmailFrame(ctk.CTkFrame):
             self.frame_card,
             placeholder_text="Digite o assunto",
             width=350,
-            height=40,
-            corner_radius=12
+            height=40
         )
 
-        self.entry_assunto.pack(
-            pady=15
-        )
+        self.entry_assunto.pack(pady=10)
 
         # =========================
-        # MENSAGEM
+        # MENSAGEM 
         # =========================
         self.texto_mensagem = ctk.CTkTextbox(
             self.frame_card,
             width=350,
-            height=140,
+            height=160,
             corner_radius=12,
-            font=("Segoe UI", 14)
+            font=("Segoe UI", 14),
+
+            # fundo e texto dinâmico
+            fg_color="#FFFFFF" if tema.tema_atual == "light" else "#2A2D3E",
+            text_color="#111111" if tema.tema_atual == "light" else "#FFFFFF",
+
+            # 🔥 BORDA PRETA NO CLARO
+            border_width=1,
+            border_color="#000000" if tema.tema_atual == "light" else "#3B3F55"
         )
 
-        self.texto_mensagem.pack(
-            pady=15
-        )
+        self.texto_mensagem.pack(pady=15)
 
         # =========================
         # BOTÃO ENVIAR
@@ -101,16 +100,12 @@ class EmailFrame(ctk.CTkFrame):
             text="Enviar E-mail",
             width=220,
             height=45,
-            corner_radius=12,
             fg_color=self.cor_botao,
             hover_color=self.cor_hover,
-            font=("Segoe UI", 15, "bold"),
             command=self.enviar_email
         )
 
-        self.botao_enviar.pack(
-            pady=20
-        )
+        self.botao_enviar.pack(pady=15)
 
         # =========================
         # STATUS
@@ -124,46 +119,27 @@ class EmailFrame(ctk.CTkFrame):
 
         self.label_status.pack()
 
-    # ===================================
-    # ENVIAR E-MAIL
-    # ===================================
+    # =========================
+    # ENVIAR
+    # =========================
     def enviar_email(self):
 
-        destinatario = self.entry_destinatario.get()
-
+        dest = self.entry_destinatario.get()
         assunto = self.entry_assunto.get()
+        msg = self.texto_mensagem.get("1.0", "end").strip()
 
-        mensagem = self.texto_mensagem.get(
-            "1.0",
-            "end"
-        ).strip()
-
-        # Validação
-        if (
-            destinatario == ""
-            or assunto == ""
-            or mensagem == ""
-        ):
-
+        if not dest or not assunto or not msg:
             self.label_status.configure(
                 text="Preencha todos os campos!",
                 text_color="#EF4444"
             )
-
             return
 
-        # Simulação visual
         self.label_status.configure(
             text="E-mail enviado com sucesso! ✅",
             text_color="#22C55E"
         )
 
-        # Limpar campos
         self.entry_destinatario.delete(0, "end")
-
         self.entry_assunto.delete(0, "end")
-
-        self.texto_mensagem.delete(
-            "1.0",
-            "end"
-        )
+        self.texto_mensagem.delete("1.0", "end")

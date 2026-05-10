@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
-from cores import obter_cores
+from cores import cores
 
 
 class CalculadoraFrame(ctk.CTkFrame):
@@ -8,18 +8,16 @@ class CalculadoraFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        cores = obter_cores()
+        # 🎨 CORES (PADRÃO CORRETO)
+        c = cores()
 
-        self.cor_card = cores["card"]
-
-        self.cor_texto = cores["texto"]
-
-        self.cor_botao = cores["botao"]
-
-        self.cor_hover = cores["hover"]
+        self.cor_card = c["card"]
+        self.cor_texto = c["texto"]
+        self.cor_botao = c["botao"]
+        self.cor_hover = c["hover"]
 
         self.configure(
-            fg_color=cores["fundo"]
+            fg_color=c["fundo"]
         )
 
         # Título
@@ -30,9 +28,7 @@ class CalculadoraFrame(ctk.CTkFrame):
             text_color=self.cor_texto
         )
 
-        self.label_titulo.pack(
-            pady=(40, 20)
-        )
+        self.label_titulo.pack(pady=(40, 20))
 
         # Card
         self.frame_card = ctk.CTkFrame(
@@ -44,7 +40,6 @@ class CalculadoraFrame(ctk.CTkFrame):
         )
 
         self.frame_card.pack()
-
         self.frame_card.pack_propagate(False)
 
         # Número 1
@@ -55,9 +50,7 @@ class CalculadoraFrame(ctk.CTkFrame):
             height=45
         )
 
-        self.entry_num1.pack(
-            pady=(40, 20)
-        )
+        self.entry_num1.pack(pady=(40, 20))
 
         # Número 2
         self.entry_num2 = ctk.CTkEntry(
@@ -67,21 +60,16 @@ class CalculadoraFrame(ctk.CTkFrame):
             height=45
         )
 
-        self.entry_num2.pack(
-            pady=10
-        )
+        self.entry_num2.pack(pady=10)
 
-        # Frame operações
+        # Operações
         self.frame_operacoes = ctk.CTkFrame(
             self.frame_card,
             fg_color="transparent"
         )
 
-        self.frame_operacoes.pack(
-            pady=25
-        )
+        self.frame_operacoes.pack(pady=25)
 
-        # Botões
         operacoes = [
             ("+", self.somar),
             ("-", self.subtrair),
@@ -101,10 +89,7 @@ class CalculadoraFrame(ctk.CTkFrame):
                 command=comando
             )
 
-            botao.pack(
-                side="left",
-                padx=6
-            )
+            botao.pack(side="left", padx=6)
 
         # Resultado
         self.label_resultado = ctk.CTkLabel(
@@ -114,9 +99,7 @@ class CalculadoraFrame(ctk.CTkFrame):
             text_color=self.cor_texto
         )
 
-        self.label_resultado.pack(
-            pady=(30, 10)
-        )
+        self.label_resultado.pack(pady=(30, 10))
 
         # Limpar
         self.botao_limpar = ctk.CTkButton(
@@ -129,108 +112,52 @@ class CalculadoraFrame(ctk.CTkFrame):
             command=self.limpar
         )
 
-        self.botao_limpar.pack(
-            pady=20
-        )
+        self.botao_limpar.pack(pady=20)
 
     def obter_numeros(self):
 
         try:
-
-            num1 = float(
-                self.entry_num1.get()
-            )
-
-            num2 = float(
-                self.entry_num2.get()
-            )
-
+            num1 = float(self.entry_num1.get())
+            num2 = float(self.entry_num2.get())
             return num1, num2
 
         except:
-
-            messagebox.showerror(
-                "Erro",
-                "Digite números válidos!"
-            )
-
+            messagebox.showerror("Erro", "Digite números válidos!")
             return None
 
     def atualizar_resultado(self, valor):
-
-        self.label_resultado.configure(
-            text=f"Resultado: {valor}"
-        )
+        self.label_resultado.configure(text=f"Resultado: {valor}")
 
     def somar(self):
-
         numeros = self.obter_numeros()
-
         if numeros:
-
             num1, num2 = numeros
-
-            self.atualizar_resultado(
-                num1 + num2
-            )
+            self.atualizar_resultado(num1 + num2)
 
     def subtrair(self):
-
         numeros = self.obter_numeros()
-
         if numeros:
-
             num1, num2 = numeros
-
-            self.atualizar_resultado(
-                num1 - num2
-            )
+            self.atualizar_resultado(num1 - num2)
 
     def multiplicar(self):
-
         numeros = self.obter_numeros()
-
         if numeros:
-
             num1, num2 = numeros
-
-            self.atualizar_resultado(
-                num1 * num2
-            )
+            self.atualizar_resultado(num1 * num2)
 
     def dividir(self):
-
         numeros = self.obter_numeros()
-
         if numeros:
-
             num1, num2 = numeros
 
             if num2 == 0:
-
-                messagebox.showerror(
-                    "Erro",
-                    "Não é possível dividir por zero!"
-                )
-
+                messagebox.showerror("Erro", "Não é possível dividir por zero!")
                 return
 
-            self.atualizar_resultado(
-                round(num1 / num2, 2)
-            )
+            self.atualizar_resultado(round(num1 / num2, 2))
 
     def limpar(self):
-
-        self.entry_num1.delete(
-            0,
-            "end"
-        )
-
-        self.entry_num2.delete(
-            0,
-            "end"
-        )
-
-        self.label_resultado.configure(
-            text="Resultado:"
-        )
+        self.entry_num1.delete(0, "end")
+        self.entry_num2.delete(0, "end")
+        self.label_resultado.configure(text="Resultado:")

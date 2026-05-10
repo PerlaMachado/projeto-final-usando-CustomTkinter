@@ -2,6 +2,7 @@ import customtkinter as ctk
 import requests
 from tkinter import messagebox
 from datetime import datetime
+from cores import cores
 
 
 class CambioFrame(ctk.CTkFrame):
@@ -10,12 +11,14 @@ class CambioFrame(ctk.CTkFrame):
         super().__init__(master)
 
         # =========================
-        # CORES
+        # CORES (PADRÃO GLOBAL)
         # =========================
-        self.cor_card = "#2A2D3E"
+        c = cores()
 
-        self.cor_botao = "#3B82F6"
-        self.cor_hover = "#2563EB"
+        self.cor_card = c["card"]
+        self.cor_botao = c["botao"]
+        self.cor_hover = c["hover"]
+        self.cor_texto = c["texto"]
 
         self.configure(
             fg_color="transparent"
@@ -28,12 +31,10 @@ class CambioFrame(ctk.CTkFrame):
             self,
             text="💵 Cotação de Moedas",
             font=("Segoe UI", 28, "bold"),
-            text_color="white"
+            text_color=self.cor_texto
         )
 
-        self.label_titulo.pack(
-            pady=(30, 20)
-        )
+        self.label_titulo.pack(pady=(30, 20))
 
         # =========================
         # CARD PRINCIPAL
@@ -46,10 +47,7 @@ class CambioFrame(ctk.CTkFrame):
             corner_radius=20
         )
 
-        self.frame_card.pack(
-            pady=10
-        )
-
+        self.frame_card.pack(pady=10)
         self.frame_card.pack_propagate(False)
 
         # =========================
@@ -62,9 +60,7 @@ class CambioFrame(ctk.CTkFrame):
             text_color="#B0B3C0"
         )
 
-        self.label_info.pack(
-            pady=(35, 20)
-        )
+        self.label_info.pack(pady=(35, 20))
 
         # =========================
         # DÓLAR
@@ -73,12 +69,10 @@ class CambioFrame(ctk.CTkFrame):
             self.frame_card,
             text="Dólar: --",
             font=("Segoe UI", 24, "bold"),
-            text_color="white"
+            text_color=self.cor_texto
         )
 
-        self.label_dolar.pack(
-            pady=15
-        )
+        self.label_dolar.pack(pady=15)
 
         # =========================
         # EURO
@@ -87,12 +81,10 @@ class CambioFrame(ctk.CTkFrame):
             self.frame_card,
             text="Euro: --",
             font=("Segoe UI", 24, "bold"),
-            text_color="white"
+            text_color=self.cor_texto
         )
 
-        self.label_euro.pack(
-            pady=15
-        )
+        self.label_euro.pack(pady=15)
 
         # =========================
         # HORÁRIO
@@ -104,9 +96,7 @@ class CambioFrame(ctk.CTkFrame):
             text_color="#B0B3C0"
         )
 
-        self.label_horario.pack(
-            pady=20
-        )
+        self.label_horario.pack(pady=20)
 
         # =========================
         # BOTÃO CONSULTAR
@@ -123,9 +113,7 @@ class CambioFrame(ctk.CTkFrame):
             command=self.buscar_cotacoes
         )
 
-        self.botao_consultar.pack(
-            pady=20
-        )
+        self.botao_consultar.pack(pady=20)
 
     # ===================================
     # BUSCAR COTAÇÕES
@@ -133,34 +121,24 @@ class CambioFrame(ctk.CTkFrame):
     def buscar_cotacoes(self):
 
         try:
-
             url = "https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL"
 
-            resposta = requests.get(
-                url,
-                timeout=5
-            )
+            resposta = requests.get(url, timeout=5)
 
             dados = resposta.json()
 
             dolar = dados["USDBRL"]["bid"]
-
             euro = dados["EURBRL"]["bid"]
 
-            # Atualiza dólar
             self.label_dolar.configure(
                 text=f"Dólar: R$ {float(dolar):.2f}"
             )
 
-            # Atualiza euro
             self.label_euro.configure(
                 text=f"Euro: R$ {float(euro):.2f}"
             )
 
-            # Hora atual
-            horario = datetime.now().strftime(
-                "%H:%M"
-            )
+            horario = datetime.now().strftime("%H:%M")
 
             self.label_horario.configure(
                 text=f"Consulta realizada em: {horario}"

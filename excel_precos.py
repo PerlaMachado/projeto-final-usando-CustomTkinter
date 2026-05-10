@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 import pandas as pd
 import json
 import os
+from cores import cores
 
 
 class ExcelFrame(ctk.CTkFrame):
@@ -11,45 +12,30 @@ class ExcelFrame(ctk.CTkFrame):
         super().__init__(master)
 
         # =========================
-        # CORES
+        # CORES GLOBAIS
         # =========================
-        self.cor_card = "#2A2D3E"
+        c = cores()
 
-        self.cor_botao = "#3B82F6"
-        self.cor_hover = "#2563EB"
+        self.cor_card = c["card"]
+        self.cor_texto = c["texto"]
+        self.cor_botao = c["botao"]
+        self.cor_hover = c["hover"]
 
-        self.configure(
-            fg_color="transparent"
-        )
-
-        # =========================
-        # PASTA ARQUIVOS
-        # =========================
-        self.pasta_arquivos = "arquivos"
-
-        # Cria pasta automaticamente
-        os.makedirs(
-            self.pasta_arquivos,
-            exist_ok=True
-        )
+        self.configure(fg_color="transparent")
 
         # =========================
         # ARQUIVOS
         # =========================
-        self.arquivo_json = (
-            "arquivos/produtos.json"
-        )
+        self.pasta_arquivos = "arquivos"
+        os.makedirs(self.pasta_arquivos, exist_ok=True)
 
-        self.arquivo_excel = (
-            "arquivos/controle_precos.xlsx"
-        )
+        self.arquivo_json = "arquivos/produtos.json"
+        self.arquivo_excel = "arquivos/controle_precos.xlsx"
 
         # =========================
-        # LISTA PRODUTOS
+        # DADOS
         # =========================
         self.produtos = []
-
-        # Carrega dados
         self.carregar_produtos()
 
         # =========================
@@ -59,12 +45,10 @@ class ExcelFrame(ctk.CTkFrame):
             self,
             text="📊 Controle de Preços",
             font=("Segoe UI", 28, "bold"),
-            text_color="white"
+            text_color=self.cor_texto
         )
 
-        self.label_titulo.pack(
-            pady=(20, 20)
-        )
+        self.label_titulo.pack(pady=(20, 20))
 
         # =========================
         # CARD PRINCIPAL
@@ -77,25 +61,19 @@ class ExcelFrame(ctk.CTkFrame):
             corner_radius=20
         )
 
-        self.frame_card.pack(
-            pady=10
-        )
-
+        self.frame_card.pack(pady=10)
         self.frame_card.pack_propagate(False)
 
         # =========================
-        # FRAME INPUTS
+        # INPUTS
         # =========================
         self.frame_inputs = ctk.CTkFrame(
             self.frame_card,
             fg_color="transparent"
         )
 
-        self.frame_inputs.pack(
-            pady=(25, 15)
-        )
+        self.frame_inputs.pack(pady=(25, 15))
 
-        # Produto
         self.entry_produto = ctk.CTkEntry(
             self.frame_inputs,
             placeholder_text="Nome do produto",
@@ -103,13 +81,8 @@ class ExcelFrame(ctk.CTkFrame):
             height=40
         )
 
-        self.entry_produto.grid(
-            row=0,
-            column=0,
-            padx=10
-        )
+        self.entry_produto.grid(row=0, column=0, padx=10)
 
-        # Preço
         self.entry_preco = ctk.CTkEntry(
             self.frame_inputs,
             placeholder_text="Preço atual",
@@ -117,27 +90,18 @@ class ExcelFrame(ctk.CTkFrame):
             height=40
         )
 
-        self.entry_preco.grid(
-            row=0,
-            column=1,
-            padx=10
-        )
+        self.entry_preco.grid(row=0, column=1, padx=10)
 
         # =========================
-        # FRAME BOTÕES
+        # BOTÕES
         # =========================
         self.frame_botoes = ctk.CTkFrame(
             self.frame_card,
             fg_color="transparent"
         )
 
-        self.frame_botoes.pack(
-            pady=10
-        )
+        self.frame_botoes.pack(pady=10)
 
-        # =========================
-        # BOTÃO ADICIONAR
-        # =========================
         self.botao_adicionar = ctk.CTkButton(
             self.frame_botoes,
             text="Adicionar Produto",
@@ -148,15 +112,8 @@ class ExcelFrame(ctk.CTkFrame):
             command=self.adicionar_produto
         )
 
-        self.botao_adicionar.grid(
-            row=0,
-            column=0,
-            padx=10
-        )
+        self.botao_adicionar.grid(row=0, column=0, padx=10)
 
-        # =========================
-        # BOTÃO ATUALIZAR
-        # =========================
         self.botao_atualizar = ctk.CTkButton(
             self.frame_botoes,
             text="Atualizar Preço",
@@ -167,15 +124,8 @@ class ExcelFrame(ctk.CTkFrame):
             command=self.atualizar_preco
         )
 
-        self.botao_atualizar.grid(
-            row=0,
-            column=1,
-            padx=10
-        )
+        self.botao_atualizar.grid(row=0, column=1, padx=10)
 
-        # =========================
-        # BOTÃO REMOVER
-        # =========================
         self.botao_remover = ctk.CTkButton(
             self.frame_botoes,
             text="Remover",
@@ -186,19 +136,14 @@ class ExcelFrame(ctk.CTkFrame):
             command=self.remover_produto
         )
 
-        self.botao_remover.grid(
-            row=0,
-            column=2,
-            padx=10
-        )
+        self.botao_remover.grid(row=0, column=2, padx=10)
 
         # =========================
-        # FRAME TABELA
+        # FRAME TABELA (ESTÁVEL)
         # =========================
         self.frame_tabela = ctk.CTkFrame(
             self.frame_card,
-            fg_color="white",
-            corner_radius=10
+            fg_color="#F3F4F6"  # neutro fixo para evitar invisibilidade
         )
 
         self.frame_tabela.pack(
@@ -209,66 +154,55 @@ class ExcelFrame(ctk.CTkFrame):
         )
 
         # =========================
+        # ESTILO DO TREEVIEW (ESTÁVEL)
+        # =========================
+        style = ttk.Style()
+        style.theme_use("clam")
+
+        style.configure(
+            "Treeview",
+            background="#F9FAFB",
+            foreground="#111111",
+            fieldbackground="#F9FAFB",
+            rowheight=28
+        )
+
+        style.configure(
+            "Treeview.Heading",
+            background="#E5E7EB",
+            foreground="#111111",
+            font=("Segoe UI", 10, "bold")
+        )
+
+        style.map(
+            "Treeview",
+            background=[("selected", "#3B82F6")],
+            foreground=[("selected", "white")]
+        )
+
+        # =========================
         # TABELA
         # =========================
         self.tabela = ttk.Treeview(
             self.frame_tabela,
-            columns=(
-                "Produto",
-                "Antigo",
-                "Atual",
-                "Status"
-            ),
+            columns=("Produto", "Antigo", "Atual", "Status"),
             show="headings"
         )
 
-        self.tabela.heading(
-            "Produto",
-            text="Produto"
-        )
+        self.tabela.heading("Produto", text="Produto")
+        self.tabela.heading("Antigo", text="Preço Antigo")
+        self.tabela.heading("Atual", text="Preço Atual")
+        self.tabela.heading("Status", text="Status")
 
-        self.tabela.heading(
-            "Antigo",
-            text="Preço Antigo"
-        )
+        self.tabela.column("Produto", width=220)
+        self.tabela.column("Antigo", width=140)
+        self.tabela.column("Atual", width=140)
+        self.tabela.column("Status", width=120)
 
-        self.tabela.heading(
-            "Atual",
-            text="Preço Atual"
-        )
-
-        self.tabela.heading(
-            "Status",
-            text="Status"
-        )
-
-        self.tabela.column(
-            "Produto",
-            width=220
-        )
-
-        self.tabela.column(
-            "Antigo",
-            width=140
-        )
-
-        self.tabela.column(
-            "Atual",
-            width=140
-        )
-
-        self.tabela.column(
-            "Status",
-            width=120
-        )
-
-        self.tabela.pack(
-            fill="both",
-            expand=True
-        )
+        self.tabela.pack(fill="both", expand=True)
 
         # =========================
-        # BOTÃO EXPORTAR
+        # EXPORTAR
         # =========================
         self.botao_exportar = ctk.CTkButton(
             self.frame_card,
@@ -280,173 +214,95 @@ class ExcelFrame(ctk.CTkFrame):
             command=self.exportar_excel
         )
 
-        self.botao_exportar.pack(
-            pady=(0, 20)
-        )
+        self.botao_exportar.pack(pady=(0, 20))
 
-        # Atualiza tabela
-        self.atualizar_tabela()
+        # FORÇA CARREGAMENTO
+        self.after(100, self.atualizar_tabela)
 
-    # ===================================
-    # SALVAR JSON
-    # ===================================
+    # =========================
+    # JSON
+    # =========================
     def salvar_produtos(self):
+        with open(self.arquivo_json, "w", encoding="utf-8") as f:
+            json.dump(self.produtos, f, indent=4, ensure_ascii=False)
 
-        with open(
-            self.arquivo_json,
-            "w",
-            encoding="utf-8"
-        ) as arquivo:
-
-            json.dump(
-                self.produtos,
-                arquivo,
-                indent=4,
-                ensure_ascii=False
-            )
-
-    # ===================================
-    # CARREGAR JSON
-    # ===================================
     def carregar_produtos(self):
+        if os.path.exists(self.arquivo_json):
+            with open(self.arquivo_json, "r", encoding="utf-8") as f:
+                self.produtos = json.load(f)
 
-        if os.path.exists(
-            self.arquivo_json
-        ):
-
-            with open(
-                self.arquivo_json,
-                "r",
-                encoding="utf-8"
-            ) as arquivo:
-
-                self.produtos = json.load(
-                    arquivo
-                )
-
-    # ===================================
-    # ADICIONAR PRODUTO
-    # ===================================
+    # =========================
+    # ADICIONAR
+    # =========================
     def adicionar_produto(self):
 
         produto = self.entry_produto.get()
-
         preco = self.entry_preco.get()
 
-        if produto == "" or preco == "":
-
-            messagebox.showerror(
-                "Erro",
-                "Preencha todos os campos!"
-            )
-
+        if not produto or not preco:
+            messagebox.showerror("Erro", "Preencha todos os campos!")
             return
 
         try:
-
             preco = float(preco)
-
         except:
-
-            messagebox.showerror(
-                "Erro",
-                "Digite um preço válido!"
-            )
-
+            messagebox.showerror("Erro", "Preço inválido!")
             return
 
         self.produtos.append({
-
             "produto": produto,
-
             "antigo": "--",
-
             "atual": preco,
-
             "status": "Novo"
-
         })
 
         self.salvar_produtos()
-
         self.atualizar_tabela()
-
         self.limpar_campos()
 
-    # ===================================
-    # ATUALIZAR PREÇO
-    # ===================================
+    # =========================
+    # ATUALIZAR
+    # =========================
     def atualizar_preco(self):
 
         item = self.tabela.selection()
-
         if not item:
-
-            messagebox.showwarning(
-                "Aviso",
-                "Selecione um produto!"
-            )
-
+            messagebox.showwarning("Aviso", "Selecione um produto!")
             return
 
         try:
-
-            novo_preco = float(
-                self.entry_preco.get()
-            )
-
+            novo_preco = float(self.entry_preco.get())
         except:
-
-            messagebox.showerror(
-                "Erro",
-                "Digite um preço válido!"
-            )
-
+            messagebox.showerror("Erro", "Preço inválido!")
             return
 
         indice = self.tabela.index(item)
-
         produto = self.produtos[indice]
 
-        preco_antigo = produto["atual"]
-
-        produto["antigo"] = preco_antigo
-
+        antigo = produto["atual"]
+        produto["antigo"] = antigo
         produto["atual"] = novo_preco
 
-        # STATUS
-        if novo_preco > preco_antigo:
-
+        if novo_preco > antigo:
             produto["status"] = "▲ Aumentou"
-
-        elif novo_preco < preco_antigo:
-
+        elif novo_preco < antigo:
             produto["status"] = "▼ Diminuiu"
-
         else:
-
             produto["status"] = "▬ Igual"
 
         self.salvar_produtos()
-
         self.atualizar_tabela()
-
         self.limpar_campos()
 
-    # ===================================
-    # REMOVER PRODUTO
-    # ===================================
+    # =========================
+    # REMOVER
+    # =========================
     def remover_produto(self):
 
         item = self.tabela.selection()
 
         if not item:
-
-            messagebox.showwarning(
-                "Aviso",
-                "Selecione um produto!"
-            )
-
+            messagebox.showwarning("Aviso", "Selecione um produto!")
             return
 
         indice = self.tabela.index(item)
@@ -454,82 +310,47 @@ class ExcelFrame(ctk.CTkFrame):
         del self.produtos[indice]
 
         self.salvar_produtos()
-
         self.atualizar_tabela()
 
-    # ===================================
-    # ATUALIZAR TABELA
-    # ===================================
+    # =========================
+    # TABELA
+    # =========================
     def atualizar_tabela(self):
 
-        for item in self.tabela.get_children():
+        for i in self.tabela.get_children():
+            self.tabela.delete(i)
 
-            self.tabela.delete(item)
+        for p in self.produtos:
 
-        for produto in self.produtos:
-
-            antigo = produto["antigo"]
-
+            antigo = p["antigo"]
             if antigo != "--":
+                antigo = f"R$ {antigo:.2f}"
 
-                antigo = (
-                    f"R$ {antigo:.2f}"
-                )
-
-            atual = (
-                f"R$ {produto['atual']:.2f}"
-            )
+            atual = f"R$ {p['atual']:.2f}"
 
             self.tabela.insert(
                 "",
                 "end",
-                values=(
-                    produto["produto"],
-                    antigo,
-                    atual,
-                    produto["status"]
-                )
+                values=(p["produto"], antigo, atual, p["status"])
             )
 
-    # ===================================
-    # EXPORTAR EXCEL
-    # ===================================
+    # =========================
+    # EXPORTAR
+    # =========================
     def exportar_excel(self):
 
-        if len(self.produtos) == 0:
-
-            messagebox.showwarning(
-                "Aviso",
-                "Nenhum produto cadastrado!"
-            )
-
+        if not self.produtos:
+            messagebox.showwarning("Aviso", "Sem produtos!")
             return
 
-        df = pd.DataFrame(
-            self.produtos
-        )
+        df = pd.DataFrame(self.produtos)
+        df.to_excel(self.arquivo_excel, index=False)
 
-        df.to_excel(
-            self.arquivo_excel,
-            index=False
-        )
+        messagebox.showinfo("Sucesso", "Excel exportado!")
 
-        messagebox.showinfo(
-            "Sucesso",
-            "Excel exportado com sucesso!"
-        )
-
-    # ===================================
-    # LIMPAR CAMPOS
-    # ===================================
+    # =========================
+    # LIMPAR
+    # =========================
     def limpar_campos(self):
-
-        self.entry_produto.delete(
-            0,
-            "end"
-        )
-
-        self.entry_preco.delete(
-            0,
-            "end"
-        )
+        self.entry_produto.delete(0, "end")
+        self.entry_preco.delete(0, "end")

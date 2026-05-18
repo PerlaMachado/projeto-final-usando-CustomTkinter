@@ -7,8 +7,8 @@
     },
     {
         "produto": "borracha",
-        "antigo": 46.0,
-        "atual": 79.0,
+        "antigo": 79.0,
+        "atual": 98.0,
         "status": "▲ Aumentou"
     },
     {
@@ -19,9 +19,9 @@
     },
     {
         "produto": "massinha",
-        "antigo": "--",
-        "atual": 89.0,
-        "status": "Novo"
+        "antigo": 89.0,
+        "atual": 56.0,
+        "status": "▼ Diminuiu"
     },
     {
         "produto": "caderno",

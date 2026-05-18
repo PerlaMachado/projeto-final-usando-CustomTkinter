@@ -65,6 +65,11 @@ Após isso, a tela de login será aberta automaticamente.
 
 ---
 
+# OBS: LEMBRE-SE DE VERIFICAR SE VOCÊ TEM TODAS AS BIBLIOTECAS:
+- Pandas;
+- Request;
+- Customtkinter; 
+
 # 🔐 Tela de Login
 
 A primeira tela do sistema é a tela de login.

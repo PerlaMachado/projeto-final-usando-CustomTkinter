@@ -59,7 +59,7 @@ no início do terminal.
 
 Com o ambiente virtual ativo:
 
-Execute o arquivo principal do sistema.
+Execute o arquivo principal do sistema. - main.py
 
 Após isso, a tela de login será aberta automaticamente.
 
